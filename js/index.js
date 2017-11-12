@@ -1,30 +1,13 @@
-/*$("#customSearch").click(
-   function()
-   {
-      var filterString = $("#inputbox").val();
-      var jsonString = $("#textbox").val();
-      var jsonList = jsonString.split("\n");
-      var finalString = "";
-      for(var i = 0;i < jsonList.length;i++)
-      {
-         if((jsonList[i].indexOf(filterString) >= 0))
-         {
-            finalString += jsonList[i];
-            finalString += '<br/>';
-         }
-      }
-      $("#jumbotron2").html(finalString);
-   }
-);*/
+var containsList = [];
+var parentChildStack = "";
 $("#customSearch").on("click",
   function()
   {
     var jsonString = $("#inputJson").val();
     var json = JSON.parse(jsonString);
-    //$("#Output").html(json.keys());
     var text = setKeys(json);
-    console.log(text);
-  });
+  }
+);
 
 function setKeys(jsonData)
 {
@@ -32,85 +15,97 @@ function setKeys(jsonData)
   var jsonKeys = Object.keys(jsonData);
   for(var key in jsonKeys)
   {
-    //console.log(jsonKeys[key]);
     if(isObject(jsonData[jsonKeys[key]]))
     {
-      text += jsonKeys[key] + "\n" + setKeys(jsonData[jsonKeys[key]]) +"\n";
+      if(containsList.indexOf(jsonKeys[key])<0)
+      {
+          $("#Output").append("<a class='btn btn-primary' id="+jsonKeys[key]+">"+jsonKeys[key]+"</a>");
+          containsList.push(jsonKeys[key]);
+          //parentChildStack += jsonKeys[key] + "->";
+          //console.log(parentChildStack);
+      }
+      setKeys(jsonData[jsonKeys[key]]);
     }
     else if(isArray(jsonData[jsonKeys[key]]))
     {
       var array = jsonData[jsonKeys[key]];
-      text += "\n" + jsonKeys[key] + "\n";
+      if(containsList.indexOf(jsonKeys[key])<0)
+      {
+          $("#Output").append("<a class='btn btn-primary' id="+jsonKeys[key]+">"+jsonKeys[key]+"</a>");
+          containsList.push(jsonKeys[key]);
+          //parentChildStack += jsonKeys[key] + "->";
+          //console.log(parentChildStack);
+      }
       for(var i=0;i<array.length;i++)
       {
         if(isObject(array[i]))
-          text += setKeys(array[i]);
+        {
+          //if(containsList.indexOf(array[i])<0)
+          //    $("#Output").append("<a class=btn btn-primary' id="+array[i]+">"+array[i]+"</a>");
+          setKeys(array[i]);
+        }
       }
     }
     else
     {
-      text += "\n" + jsonKeys[key] + "\n";
-    }
-  }
-  return text;
-}
-function isObject (value)
-{
-   return value && typeof value === 'object' && value.constructor === Object;
-};
-/*
-function jsonFilter(json)
-{
-  var txt = '';
-  for (var key in json)
-  {
-    if (json.hasOwnProperty(key))
-    {
-      if ('object' == typeof(json[key]))
+      if(containsList.indexOf(jsonKeys[key])<0)
       {
-        txt += jsonFilter(json[key]);
+          $("#Output").append("<a class='btn btn-primary' id="+jsonKeys[key]+">"+jsonKeys[key]+"</a>");
+          containsList.push(jsonKeys[key]);
+          //parentChildStack += jsonKeys[key] + "->";
+          //console.log(parentChildStack);
       }
     }
-    else
-    {
-      txt += key;
-    }
   }
-  return txt;
+  var tempList = parentChildStack.split("->");
+  tempList.r
+  //parentChildStack = tempList.join("->");
+  ///console.log(parentChildStack);
 }
-*/
-function isString (value) {
-return typeof value === 'string' || value instanceof String;
-};
-function isNumber (value) {
-return typeof value === 'number' && isFinite(value);
-};
-function isArray (value) {
-return value && typeof value === 'object' && value.constructor === Array;
-};
-function isFunction (value) {
-return typeof value === 'function';
-};
-function isNull (value) {
-return value === null;
+function isObject(value) {
+  return value && typeof value === 'object' && value.constructor === Object;
 };
 
-// Returns if a value is undefined
-function isUndefined (value) {
-return typeof value === 'undefined';
+function isString(value) {
+  return typeof value === 'string' || value instanceof String;
 };
-function isBoolean (value) {
-return typeof value === 'boolean';
+
+function isNumber(value) {
+  return typeof value === 'number' && isFinite(value);
 };
-function isRegExp (value) {
-return value && typeof value === 'object' && value.constructor === RegExp;
+
+function isArray(value) {
+  return value && typeof value === 'object' && value.constructor === Array;
 };
-function isError (value) {
-return value instanceof Error && typeof value.message !== 'undefined';
+
+function isFunction(value) {
+  return typeof value === 'function';
 };
-function isDate (value) {
-return value instanceof Date;
+
+function isNull(value) {
+  return value === null;
 };
-function isSymbol (value) {
-return typeof value === 'symbol';
+
+function isUndefined(value) {
+  return typeof value === 'undefined';
+};
+
+function isBoolean(value) {
+  return typeof value === 'boolean';
+};
+
+function isRegExp(value) {
+  return value && typeof value === 'object' && value.constructor === RegExp;
+};
+
+function isError(value) {
+  return value instanceof Error && typeof value.message !== 'undefined';
+};
+
+function isDate(value) {
+  return value instanceof Date;
+};
+
+function isSymbol(value) {
+  return typeof value === 'symbol';
 };
